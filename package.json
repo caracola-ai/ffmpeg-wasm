@@ -1,0 +1,14 @@
+{
+  "name": "caracola-ffmpeg-validation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "fixtures": "node tests/fixtures.mjs",
+    "compare": "node tests/compare.mjs",
+    "verify": "node verify.mjs dist"
+  },
+  "devDependencies": {
+    "@ffmpeg/ffmpeg": "0.12.15",
+    "playwright": "1.63.0"
+  }
+}

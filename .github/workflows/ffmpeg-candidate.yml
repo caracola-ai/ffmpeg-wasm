@@ -1,0 +1,55 @@
+name: Validate FFmpeg candidate
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['**']
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - uses: docker/setup-buildx-action@v3
+      - name: Build candidate and corresponding sources
+        run: bash build.sh
+      - name: Verify complete distribution
+        run: |
+          node verify.mjs dist
+          node --test tests/distribution.test.mjs
+      - name: Install browser validation tools
+        working-directory: .
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium firefox webkit
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Fetch pinned comparison baseline
+        run: |
+          mkdir -p .ffmpeg-work/baseline
+          curl -fL https://unpkg.com/@ffmpeg/core@0.12.9/dist/esm/ffmpeg-core.js -o .ffmpeg-work/baseline/ffmpeg-core.js
+          curl -fL https://unpkg.com/@ffmpeg/core@0.12.9/dist/esm/ffmpeg-core.wasm -o .ffmpeg-work/baseline/ffmpeg-core.wasm
+      - name: Generate synthetic media
+        run: node tests/fixtures.mjs
+      - name: Compare browsers
+        working-directory: .
+        run: |
+          for browser in chromium firefox webkit; do
+            node tests/compare.mjs --baseline=.ffmpeg-work/baseline --browser="$browser" --repetitions=3
+          done
+          node tests/compare.mjs --baseline=.ffmpeg-work/baseline --browser=chromium --large=1
+      - name: Retain candidate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-candidate
+          path: |
+            dist/
+            test-results/**/report.json
+          retention-days: 14

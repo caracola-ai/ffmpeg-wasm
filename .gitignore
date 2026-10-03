@@ -1,0 +1,9 @@
+.DS_Store
+.idea/
+.ffmpeg-work/
+sources/
+dist/
+node_modules/
+test-results/
+tests/fixtures/
+__pycache__/

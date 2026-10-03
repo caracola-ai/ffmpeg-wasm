@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>FFmpeg comparison</title>
+<h1>FFmpeg comparison harness</h1>
+<p>Automation uses the public wrapper and conversion parameters. Results remain local.</p>
+<script type="module">
+import { FFmpeg } from '/wrapper/index.js';
+let ffmpeg;
+let messages = [];
+window.loadCore = async (variant) => {
+  ffmpeg?.terminate();
+  ffmpeg = new FFmpeg();
+  messages = [];
+  ffmpeg.on('log', ({ message }) => { messages.push(message); if (messages.length > 100) messages.shift(); });
+  const started = performance.now();
+  await ffmpeg.load({ coreURL: location.origin + '/' + variant + '/ffmpeg-core.js', wasmURL: location.origin + '/' + variant + '/ffmpeg-core.wasm' });
+  const ms = performance.now() - started;
+  await ffmpeg.exec(['-L']);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  window.coreLicense = messages.join('\n');
+  return ms;
+};
+window.convert = async (name) => {
+  messages = [];
+  const bytes = new Uint8Array(await (await fetch('/fixtures/' + encodeURIComponent(name))).arrayBuffer());
+  const input = 'input' + name.slice(name.lastIndexOf('.'));
+  const started = performance.now();
+  let code;
+  try {
+    await ffmpeg.writeFile(input, bytes);
+    code = await ffmpeg.exec(['-i', input, '-vn', '-acodec', 'libopus', '-b:a', '64k', '-ac', '1', '-ar', '16000', 'output.ogg']);
+    if (code !== 0) return { ok: false, code, ms: performance.now() - started, messages };
+    const result = await ffmpeg.readFile('output.ogg');
+    const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', result))].map(v => v.toString(16).padStart(2, '0')).join('');
+    const response = await fetch('/result', { method: 'POST', body: result });
+    if (!response.ok) throw new Error('Unable to save comparison result');
+    return { ok: true, code, bytes: result.length, hash, ms: performance.now() - started, messages };
+  } catch (error) {
+    return { ok: false, code, error: String(error), ms: performance.now() - started, messages };
+  } finally {
+    await ffmpeg.deleteFile(input).catch(() => {});
+    await ffmpeg.deleteFile('output.ogg').catch(() => {});
+  }
+};
+window.ready = true;
+</script></html>

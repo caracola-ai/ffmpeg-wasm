@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "emsdk": "emscripten/emsdk:3.1.40@sha256:c1e807a6e03ac5bd5b37bae2ace3c46c08579e2ddeb951037a3b8dac7067f2cc",
+  "platform": "linux/amd64",
+  "sourceDateEpoch": 1699572784,
+  "sources": {
+    "zlib": {
+      "version": "1.2.11",
+      "commit": "cacf7f1d4e3d44d871b605da3b647f07d718623f",
+      "url": "https://codeload.github.com/ffmpegwasm/zlib/tar.gz/cacf7f1d4e3d44d871b605da3b647f07d718623f",
+      "sha256": "6d4d6640ca3121620995ee255945161821218752b551a1a180f4215f7d124d45",
+      "license": "Zlib"
+    },
+    "ffmpeg": {
+      "version": "5.1.4",
+      "commit": "4729204c17f756e186d622060088371d10b34f7e",
+      "url": "https://codeload.github.com/FFmpeg/FFmpeg/tar.gz/4729204c17f756e186d622060088371d10b34f7e",
+      "sha256": "0d7ad57d4dd851d577fc6c19e5cec5b6e5faaeb2dbd52ab76127e3c3763fec6d",
+      "license": "LGPL-2.1-or-later (configured without GPL, version3 or nonfree components)"
+    },
+    "opus": {
+      "version": "1.3.1",
+      "commit": "e85ed7726db5d677c9c0677298ea0cb9c65bdd23",
+      "url": "https://codeload.github.com/ffmpegwasm/opus/tar.gz/e85ed7726db5d677c9c0677298ea0cb9c65bdd23",
+      "sha256": "c6d574b17d70b8c289d997a8ac81314cf1fd8c52237c421b2ee34e69cea85bf8",
+      "license": "BSD-3-Clause and accompanying notices"
+    },
+    "ffmpegwasm": {
+      "version": "0.12.9",
+      "commit": "e6988f4a1a4acc5e9ff9b2edc7e34479d012ffec",
+      "url": "https://codeload.github.com/ffmpegwasm/ffmpeg.wasm/tar.gz/e6988f4a1a4acc5e9ff9b2edc7e34479d012ffec",
+      "sha256": "1520e91cb09c33199c3baa4cbb2a9f9db30b82da89a1fe56616ffed80b3d57ea",
+      "license": "MIT bindings; LGPL-2.1-or-later fftools (per source headers)"
+    }
+  },
+  "baseline": {
+    "package": "@ffmpeg/core@0.12.9",
+    "wasmSha256": "9f57947a5bd530d8f00c5b3f2cb2a3492faa7e5d823315342d6a8656d0a6b7b7",
+    "license": "GPL-2.0-or-later",
+    "purpose": "Internal comparison only; never included in candidate distribution"
+  }
+}
