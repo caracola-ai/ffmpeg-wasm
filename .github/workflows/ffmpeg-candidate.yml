@@ -22,7 +22,7 @@ jobs:
       - name: Verify complete distribution
         run: |
           node verify.mjs dist
-          node --test tests/distribution.test.mjs
+          node --test tests/distribution.test.mjs tests/promotion.test.mjs
       - name: Install browser validation tools
         working-directory: .
         run: |

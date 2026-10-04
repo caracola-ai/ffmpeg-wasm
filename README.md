@@ -37,6 +37,23 @@ availability and the ability to use a compatible modified library.
 See [LGPL 2.1](https://opensource.org/license/lgpl-2-1) and
 [FFmpeg's guidance](https://ffmpeg.org/legal.html).
 
+## Release promotion
+
+Builds are candidates by default. After reviewing the integration and approving
+a release, generate a separate distribution:
+
+```sh
+node promote.mjs --from=dist --output=.ffmpeg-work/approved-dist \
+  --integration-reviewed=yes --release-approved=yes
+node verify.mjs .ffmpeg-work/approved-dist
+```
+
+Promotion records approval; it does not perform the review. It gives the
+distribution a new ID and updates its manifest and checksums, preserving the
+compiled JS/WASM and corresponding source bytes. Publish all files under a new
+immutable release tag. Keep the candidate intact. GitHub release assets have
+flat filenames; consumers must restore the paths recorded in the manifest.
+
 ## Tests
 
 Requires Node 22 or newer and native ffmpeg/ffprobe:
